@@ -103,7 +103,10 @@ function JobDetailPage() {
 
   const setStatus = async (id: string, status: "shortlisted" | "rejected") => {
     const { error } = await supabase.from("candidates").update({ status }).eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) {
+      toast.error(error.message);
+      return;
+    }
     toast.success(status === "shortlisted" ? "Candidate shortlisted" : "Candidate rejected");
     refresh();
   };

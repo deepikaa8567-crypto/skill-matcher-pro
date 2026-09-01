@@ -38,7 +38,10 @@ function NewJobPage() {
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!title.trim()) return toast.error("Give the role a title");
+    if (!title.trim()) {
+      toast.error("Give the role a title");
+      return;
+    }
     setBusy(true);
     try {
       const { data: userData } = await supabase.auth.getUser();

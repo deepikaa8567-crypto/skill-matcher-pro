@@ -46,7 +46,10 @@ export function ResumeDropzone({ jobId, onDone }: { jobId: string; onDone: () =>
 
       const { data: userData } = await supabase.auth.getUser();
       const userId = userData.user?.id;
-      if (!userId) return toast.error("Session expired — sign in again");
+      if (!userId) {
+        toast.error("Session expired — sign in again");
+        return;
+      }
 
       for (const file of valid) {
         try {
