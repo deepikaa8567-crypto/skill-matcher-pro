@@ -152,7 +152,7 @@ function JobDetailPage() {
     <AppShell>
       <PageHeader
         title={job?.title ?? "Job description"}
-        description={job?.company ?? undefined}
+        description={job?.company ?? ""}
         action={
           <Button
             variant="outline"
