@@ -1,5 +1,5 @@
 const GROQ_URL = "https://api.groq.com/openai/v1/chat/completions";
-const GROQ_MODEL = "llama-3.3-70b-versatile";
+const DEFAULT_MODEL = "openai/gpt-oss-120b";
 
 /**
  * Calls Groq and requires strict JSON output.
@@ -9,6 +9,7 @@ const GROQ_MODEL = "llama-3.3-70b-versatile";
 export async function groqJson<T>(system: string, user: string): Promise<T> {
   const apiKey = process.env["GROQ_API_KEY"];
   if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
+  const model = process.env["GROQ_MODEL"] ?? DEFAULT_MODEL;
 
   const res = await fetch(GROQ_URL, {
     method: "POST",
@@ -17,7 +18,7 @@ export async function groqJson<T>(system: string, user: string): Promise<T> {
       authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
-      model: GROQ_MODEL,
+      model,
       temperature: 0.1,
       response_format: { type: "json_object" },
       messages: [
