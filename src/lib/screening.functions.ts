@@ -183,7 +183,7 @@ Infer total_experience_years from the work history when not stated. Never invent
       const semantic = await groqJson<SemanticResult>(
         `You are an impartial hiring analyst scoring a candidate against a job. Consider synonyms and equivalent experience ("React" ~ "React.js", "led a team" ~ "leadership").
 Reply with ONLY strict JSON:
-{"matched_skills": string[], "missing_skills": string[], "semantic_score": number (0-100), "rationale": string (2-3 sentences), "strength": string (one sentence), "concern": string (one sentence)}
+{"matched_skills": string[], "missing_skills": string[], "semantic_score": integer between 0 and 100 (NOT a fraction — a great fit is 85, a poor fit is 15), "rationale": string (2-3 sentences), "strength": string (one sentence), "concern": string (one sentence)}
 Judge on evidence in the resume only. Never mention age, gender, nationality, or other protected attributes.`,
         JSON.stringify({
           job: {
