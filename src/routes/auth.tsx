@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { Loader2, ScanSearch } from "lucide-react";
+import { Loader2, ScanSearch, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureDemoAccount } from "@/lib/demo.functions";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
