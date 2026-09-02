@@ -1,12 +1,15 @@
 import { useState } from "react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { motion } from "motion/react";
 import { toast } from "sonner";
-import { Loader2, ScanSearch } from "lucide-react";
+import { Loader2, ScanSearch, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
+import { ensureDemoAccount } from "@/lib/demo.functions";
+
 
 export const Route = createFileRoute("/auth")({
   head: () => ({
@@ -26,6 +29,27 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [demoBusy, setDemoBusy] = useState(false);
+  const prepareDemo = useServerFn(ensureDemoAccount);
+
+  const demoLogin = async () => {
+    setDemoBusy(true);
+    try {
+      const creds = await prepareDemo({ data: undefined });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (error) throw error;
+      toast.success("Signed in to the demo workspace");
+      router.navigate({ to: "/dashboard" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Demo sign-in failed");
+    } finally {
+      setDemoBusy(false);
+    }
+  };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -104,6 +128,27 @@ function AuthPage() {
             {mode === "signin" ? "Sign in" : "Create account"}
           </Button>
         </form>
+
+        <div className="my-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-[11px] uppercase tracking-wide text-muted-foreground">or</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full"
+          onClick={() => void demoLogin()}
+          disabled={demoBusy || busy}
+        >
+          {demoBusy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+          Try the demo (no signup)
+        </Button>
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">
+          Instant access to a workspace preloaded with sample roles and candidates.
+        </p>
+
 
         <button
           type="button"
