@@ -129,6 +129,27 @@ function AuthPage() {
           </Button>
         </form>
 
+        <div className="my-5 flex items-center gap-3">
+          <span className="h-px flex-1 bg-border" />
+          <span className="text-[11px] uppercase tracking-wide text-muted-foreground">or</span>
+          <span className="h-px flex-1 bg-border" />
+        </div>
+
+        <Button
+          type="button"
+          variant="secondary"
+          className="w-full"
+          onClick={() => void demoLogin()}
+          disabled={demoBusy || busy}
+        >
+          {demoBusy ? <Loader2 className="size-4 animate-spin" /> : <Sparkles className="size-4" />}
+          Try the demo (no signup)
+        </Button>
+        <p className="mt-2 text-center text-[11px] text-muted-foreground">
+          Instant access to a workspace preloaded with sample roles and candidates.
+        </p>
+
+
         <button
           type="button"
           onClick={() => setMode(mode === "signin" ? "signup" : "signin")}
