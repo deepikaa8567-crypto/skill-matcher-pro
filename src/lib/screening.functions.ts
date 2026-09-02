@@ -203,7 +203,7 @@ Judge on evidence in the resume only. Never mention age, gender, nationality, or
         }),
       );
 
-      const semanticScore = clamp(semantic.semantic_score);
+      const semanticScore = normalizeScore(semantic.semantic_score);
       const overall = Math.round(KEYWORD_WEIGHT * kw.score + SEMANTIC_WEIGHT * semanticScore);
 
       await supabase
