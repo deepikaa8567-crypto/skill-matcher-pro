@@ -29,6 +29,27 @@ function AuthPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
+  const [demoBusy, setDemoBusy] = useState(false);
+  const prepareDemo = useServerFn(ensureDemoAccount);
+
+  const demoLogin = async () => {
+    setDemoBusy(true);
+    try {
+      const creds = await prepareDemo({ data: undefined });
+      const { error } = await supabase.auth.signInWithPassword({
+        email: creds.email,
+        password: creds.password,
+      });
+      if (error) throw error;
+      toast.success("Signed in to the demo workspace");
+      router.navigate({ to: "/dashboard" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Demo sign-in failed");
+    } finally {
+      setDemoBusy(false);
+    }
+  };
+
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
