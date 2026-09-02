@@ -127,8 +127,14 @@ export const analyzeCandidate = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { groqJson, extractDocumentText, keywordScore, KEYWORD_WEIGHT, SEMANTIC_WEIGHT } =
-      await import("./groq.server");
+    const {
+      groqJson,
+      extractDocumentText,
+      keywordScore,
+      normalizeScore,
+      KEYWORD_WEIGHT,
+      SEMANTIC_WEIGHT,
+    } = await import("./groq.server");
 
     const { data: candidate, error } = await supabase
       .from("candidates")
