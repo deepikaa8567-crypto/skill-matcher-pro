@@ -90,7 +90,24 @@ const normalize = (s: string) =>
     .replace(/\bjs\b/g, "javascript")
     .trim();
 
-/** Deterministic overlap of required skills against parsed resume skills. */
+const STOP_WORDS = new Set([
+  "and","or","the","a","an","of","for","with","in","on","to","experience","skills",
+  "strong","good","knowledge","using","such","as","e","g","eg","etc","like","similar","tuning",
+]);
+
+/** Split a skill phrase like "Python (FastAPI or Django)" into matchable tokens. */
+function skillTokens(skill: string): string[] {
+  return normalize(skill.replace(/[()/,]/g, " "))
+    .split(" ")
+    .map((t) => t.trim())
+    .filter((t) => t.length > 1 && !STOP_WORDS.has(t));
+}
+
+/**
+ * Deterministic overlap of required skills against the resume.
+ * Phrase-level skills count as matched when their meaningful tokens appear,
+ * so verbose requirements ("AWS (ECS/Lambda/RDS)") still match real resumes.
+ */
 export function keywordScore(required: string[], resumeSkills: string[], resumeText: string) {
   if (required.length === 0) return { score: 0, matched: [], missing: [] };
   const haystack = normalize(`${resumeSkills.join(" ")} ${resumeText}`);
@@ -98,7 +115,11 @@ export function keywordScore(required: string[], resumeSkills: string[], resumeT
   const missing: string[] = [];
   for (const skill of required) {
     const needle = normalize(skill);
-    if (needle && haystack.includes(needle)) matched.push(skill);
+    const tokens = skillTokens(skill);
+    const hit =
+      (needle !== "" && haystack.includes(needle)) ||
+      (tokens.length > 0 && tokens.some((t) => haystack.includes(t)));
+    if (hit) matched.push(skill);
     else missing.push(skill);
   }
   return {
@@ -106,4 +127,12 @@ export function keywordScore(required: string[], resumeSkills: string[], resumeT
     matched,
     missing,
   };
+}
+
+/** Models sometimes answer 0-1 or 0-10 instead of 0-100 — normalise to 0-100. */
+export function normalizeScore(raw: unknown): number {
+  const v = typeof raw === "number" ? raw : Number(raw);
+  if (!Number.isFinite(v) || v <= 0) return 0;
+  const scaled = v <= 1 ? v * 100 : v <= 10 ? v * 10 : v;
+  return Math.max(0, Math.min(100, Math.round(scaled)));
 }

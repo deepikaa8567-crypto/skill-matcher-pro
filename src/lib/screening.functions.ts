@@ -29,11 +29,6 @@ type SemanticResult = {
   concern: string;
 };
 
-const clamp = (n: unknown) => {
-  const v = typeof n === "number" ? n : Number(n);
-  if (!Number.isFinite(v)) return 0;
-  return Math.max(0, Math.min(100, Math.round(v)));
-};
 
 const asArray = (v: unknown): string[] =>
   Array.isArray(v) ? v.filter((x): x is string => typeof x === "string" && x.trim() !== "") : [];
@@ -127,8 +122,14 @@ export const analyzeCandidate = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabase } = context;
-    const { groqJson, extractDocumentText, keywordScore, KEYWORD_WEIGHT, SEMANTIC_WEIGHT } =
-      await import("./groq.server");
+    const {
+      groqJson,
+      extractDocumentText,
+      keywordScore,
+      normalizeScore,
+      KEYWORD_WEIGHT,
+      SEMANTIC_WEIGHT,
+    } = await import("./groq.server");
 
     const { data: candidate, error } = await supabase
       .from("candidates")
@@ -182,7 +183,7 @@ Infer total_experience_years from the work history when not stated. Never invent
       const semantic = await groqJson<SemanticResult>(
         `You are an impartial hiring analyst scoring a candidate against a job. Consider synonyms and equivalent experience ("React" ~ "React.js", "led a team" ~ "leadership").
 Reply with ONLY strict JSON:
-{"matched_skills": string[], "missing_skills": string[], "semantic_score": number (0-100), "rationale": string (2-3 sentences), "strength": string (one sentence), "concern": string (one sentence)}
+{"matched_skills": string[], "missing_skills": string[], "semantic_score": integer between 0 and 100 (NOT a fraction — a great fit is 85, a poor fit is 15), "rationale": string (2-3 sentences), "strength": string (one sentence), "concern": string (one sentence)}
 Judge on evidence in the resume only. Never mention age, gender, nationality, or other protected attributes.`,
         JSON.stringify({
           job: {
@@ -197,7 +198,7 @@ Judge on evidence in the resume only. Never mention age, gender, nationality, or
         }),
       );
 
-      const semanticScore = clamp(semantic.semantic_score);
+      const semanticScore = normalizeScore(semantic.semantic_score);
       const overall = Math.round(KEYWORD_WEIGHT * kw.score + SEMANTIC_WEIGHT * semanticScore);
 
       await supabase
