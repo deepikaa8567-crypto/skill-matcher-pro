@@ -51,7 +51,7 @@ export const ensureDemoAccount = createServerFn({ method: "POST" }).handler(asyn
       const { id: sourceJobId, user_id: _u, ...jobFields } = job;
       const { data: newJob } = await supabaseAdmin
         .from("job_descriptions")
-        .insert({ ...jobFields, id: undefined, user_id: demoUserId })
+        .insert({ ...jobFields, user_id: demoUserId })
         .select("id")
         .single();
       if (!newJob) continue;
@@ -67,7 +67,6 @@ export const ensureDemoAccount = createServerFn({ method: "POST" }).handler(asyn
           .from("candidates")
           .insert({
             ...candidateFields,
-            id: undefined,
             user_id: demoUserId,
             job_description_id: newJob.id,
           })
@@ -85,7 +84,6 @@ export const ensureDemoAccount = createServerFn({ method: "POST" }).handler(asyn
           const { id: _mid, ...matchFields } = sourceMatch;
           await supabaseAdmin.from("match_results").insert({
             ...matchFields,
-            id: undefined,
             candidate_id: newCandidate.id,
             job_description_id: newJob.id,
           });
