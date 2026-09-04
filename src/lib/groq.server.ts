@@ -6,33 +6,56 @@ const DEFAULT_MODEL = "openai/gpt-oss-120b";
  * Throws on transport/parse failure so callers can fall back to a
  * "needs manual review" state instead of silently dropping the record.
  */
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
 export async function groqJson<T>(system: string, user: string): Promise<T> {
   const apiKey = process.env["GROQ_API_KEY"];
   if (!apiKey) throw new Error("GROQ_API_KEY is not configured");
   const model = process.env["GROQ_MODEL"] ?? DEFAULT_MODEL;
 
-  const res = await fetch(GROQ_URL, {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      model,
-      temperature: 0.1,
-      response_format: { type: "json_object" },
-      messages: [
-        { role: "system", content: system },
-        { role: "user", content: user.slice(0, 24000) },
-      ],
-    }),
-  });
+  const MAX_ATTEMPTS = 5;
+  let res!: Response;
 
-  if (!res.ok) {
-    const detail = await res.text();
-    console.error("[groq] request failed", res.status, detail.slice(0, 500));
-    throw new Error(`Groq request failed with status ${res.status}`);
+  for (let attempt = 1; attempt <= MAX_ATTEMPTS; attempt++) {
+    res = await fetch(GROQ_URL, {
+      method: "POST",
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${apiKey}`,
+      },
+      body: JSON.stringify({
+        model,
+        temperature: 0.1,
+        response_format: { type: "json_object" },
+        messages: [
+          { role: "system", content: system },
+          { role: "user", content: user.slice(0, 24000) },
+        ],
+      }),
+    });
+
+    if (res.ok) break;
+
+    const retryable = res.status === 429 || res.status >= 500;
+    if (!retryable || attempt === MAX_ATTEMPTS) {
+      const detail = await res.text();
+      console.error("[groq] request failed", res.status, detail.slice(0, 500));
+      throw new Error(
+        res.status === 429
+          ? "The AI service is rate limited right now. Please retry in a minute."
+          : `Groq request failed with status ${res.status}`,
+      );
+    }
+
+    // Honour Retry-After when present, else exponential backoff with jitter.
+    const headerWait = Number(res.headers.get("retry-after"));
+    const waitMs = Number.isFinite(headerWait) && headerWait > 0
+      ? Math.min(headerWait * 1000, 30000)
+      : Math.min(2000 * 2 ** (attempt - 1), 20000) + Math.random() * 500;
+    console.warn(`[groq] ${res.status}; retrying in ${Math.round(waitMs)}ms (attempt ${attempt})`);
+    await sleep(waitMs);
   }
+
 
   const payload = (await res.json()) as {
     choices?: Array<{ message?: { content?: string } }>;
