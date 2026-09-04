@@ -27,3 +27,23 @@ npm run dev
 - TypeScript
 - React
 - Tailwind CSS
+
+## Deploying to Vercel (via GitHub)
+
+1. Push this project to GitHub (in Lovable: **+ menu → GitHub → Connect project**).
+2. In Vercel, **Add New → Project** and import the repository. Framework preset: **Vite** (the build script is `npm run build`).
+3. Add these Environment Variables in Vercel (Production + Preview):
+
+| Name | Value |
+| --- | --- |
+| `VITE_SUPABASE_URL` | your Supabase project URL |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | Supabase anon/publishable key |
+| `VITE_SUPABASE_PROJECT_ID` | Supabase project ref |
+| `SUPABASE_URL` | same as above |
+| `SUPABASE_PUBLISHABLE_KEY` | same anon key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Supabase service-role key (server only) |
+| `GROQ_API_KEY` | Groq API key |
+
+4. Deploy. Then in Supabase → Authentication → URL Configuration, add the Vercel URL to **Site URL** and **Redirect URLs**.
+
+Mentor access: open the deployed URL and click **Try the demo (no signup)**.
