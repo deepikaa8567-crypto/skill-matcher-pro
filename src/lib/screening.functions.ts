@@ -157,15 +157,20 @@ export const analyzeCandidate = createServerFn({ method: "POST" })
         const { data: file, error: dlError } = await supabase.storage
           .from("resumes")
           .download(candidate.file_path);
-        if (dlError || !file) throw new Error(dlError?.message ?? "Resume file missing");
-        rawText = await extractDocumentText(
-          await file.arrayBuffer(),
-          candidate.file_name ?? candidate.file_path,
-        );
+        if (dlError || !file) {
+          // Sample/demo rows have no stored file — re-score from the saved text.
+          if (!rawText) throw new Error(dlError?.message ?? "Resume file missing");
+        } else {
+          rawText = await extractDocumentText(
+            await file.arrayBuffer(),
+            candidate.file_name ?? candidate.file_path,
+          );
+        }
       }
       if (!rawText || rawText.length < 40) {
         throw new Error("No readable text found in this file");
       }
+
 
       // 2. Structured resume
       const parsed = await groqJson<ParsedResume>(
