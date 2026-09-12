@@ -57,7 +57,7 @@ function NewJobPage() {
       const { data: jd, error } = await supabase
         .from("job_descriptions")
         .insert({
-          user_id: userId,
+          
           title: title.trim(),
           company: company.trim() || null,
           raw_text: text,
