@@ -54,7 +54,6 @@ export function ResumeDropzone({ jobId, onDone }: { jobId: string; onDone: () =>
           const { data: candidate, error } = await supabase
             .from("candidates")
             .insert({
-              user_id: userId,
               job_description_id: jobId,
               file_path: path,
               file_name: file.name,
