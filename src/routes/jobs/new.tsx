@@ -13,7 +13,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { supabase } from "@/integrations/supabase/client";
 import { extractStorageText, parseJobDescription } from "@/lib/screening.functions";
 
-export const Route = createFileRoute("/_authenticated/jobs/new")({
+export const Route = createFileRoute("/jobs/new")({
   head: () => ({
     meta: [
       { title: "New job description — SkillMatch AI" },
@@ -44,13 +44,9 @@ function NewJobPage() {
     }
     setBusy(true);
     try {
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData.user?.id;
-      if (!userId) throw new Error("Not signed in");
-
       let text = rawText.trim();
       if (!text && file) {
-        const path = `${userId}/jd/${crypto.randomUUID()}-${file.name}`;
+        const path = `workspace/jd/${crypto.randomUUID()}-${file.name}`;
         const { error: upErr } = await supabase.storage.from("resumes").upload(path, file);
         if (upErr) throw upErr;
         const res = await extractText({ data: { path } });
@@ -61,7 +57,7 @@ function NewJobPage() {
       const { data: jd, error } = await supabase
         .from("job_descriptions")
         .insert({
-          user_id: userId,
+          
           title: title.trim(),
           company: company.trim() || null,
           raw_text: text,

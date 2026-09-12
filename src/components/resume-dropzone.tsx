@@ -44,16 +44,9 @@ export function ResumeDropzone({ jobId, onDone }: { jobId: string; onDone: () =>
 
       setItems(valid.map((f) => ({ name: f.name, progress: 10, state: "uploading" as const })));
 
-      const { data: userData } = await supabase.auth.getUser();
-      const userId = userData.user?.id;
-      if (!userId) {
-        toast.error("Session expired — sign in again");
-        return;
-      }
-
       for (const file of valid) {
         try {
-          const path = `${userId}/${jobId}/${crypto.randomUUID()}-${file.name}`;
+          const path = `workspace/${jobId}/${crypto.randomUUID()}-${file.name}`;
           const { error: upErr } = await supabase.storage.from("resumes").upload(path, file);
           if (upErr) throw upErr;
           update(file.name, { progress: 55, state: "analyzing" });
@@ -61,7 +54,6 @@ export function ResumeDropzone({ jobId, onDone }: { jobId: string; onDone: () =>
           const { data: candidate, error } = await supabase
             .from("candidates")
             .insert({
-              user_id: userId,
               job_description_id: jobId,
               file_path: path,
               file_name: file.name,
