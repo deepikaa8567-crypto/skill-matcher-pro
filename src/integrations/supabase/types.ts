@@ -31,7 +31,7 @@ export type Database = {
           raw_text: string | null
           status: string
           total_experience_years: number | null
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
@@ -49,7 +49,7 @@ export type Database = {
           raw_text?: string | null
           status?: string
           total_experience_years?: number | null
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
@@ -67,7 +67,7 @@ export type Database = {
           raw_text?: string | null
           status?: string
           total_experience_years?: number | null
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: [
           {
@@ -92,7 +92,7 @@ export type Database = {
           required_skills: string[]
           role_summary: string | null
           title: string
-          user_id: string
+          user_id: string | null
         }
         Insert: {
           company?: string | null
@@ -106,7 +106,7 @@ export type Database = {
           required_skills?: string[]
           role_summary?: string | null
           title: string
-          user_id: string
+          user_id?: string | null
         }
         Update: {
           company?: string | null
@@ -120,7 +120,7 @@ export type Database = {
           required_skills?: string[]
           role_summary?: string | null
           title?: string
-          user_id?: string
+          user_id?: string | null
         }
         Relationships: []
       }
