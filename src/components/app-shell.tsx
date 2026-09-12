@@ -1,10 +1,8 @@
 import type { ReactNode } from "react";
-import { Link, useRouter } from "@tanstack/react-router";
+import { Link } from "@tanstack/react-router";
 import { motion } from "motion/react";
-import { LayoutDashboard, Briefcase, LogOut, ScanSearch } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { LayoutDashboard, Briefcase, ScanSearch } from "lucide-react";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 
 const nav = [
@@ -13,13 +11,6 @@ const nav = [
 ] as const;
 
 export function AppShell({ children }: { children: ReactNode }) {
-  const router = useRouter();
-
-  const signOut = async () => {
-    await supabase.auth.signOut();
-    router.navigate({ to: "/auth" });
-  };
-
   return (
     <div className="min-h-screen bg-background">
       <header className="sticky top-0 z-30 border-b border-border/70 bg-background/85 backdrop-blur">
@@ -51,9 +42,6 @@ export function AppShell({ children }: { children: ReactNode }) {
 
           <div className="ml-auto flex items-center gap-1">
             <ThemeToggle />
-            <Button variant="ghost" size="icon" onClick={signOut} aria-label="Sign out">
-              <LogOut className="size-4" />
-            </Button>
           </div>
         </div>
       </header>
