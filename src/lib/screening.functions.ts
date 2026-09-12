@@ -45,11 +45,11 @@ const asArray = (v: unknown): string[] =>
 
 /** Extract raw text from an uploaded file already in the `resumes` bucket. */
 export const extractStorageText = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ path: z.string().min(1) }).parse(input))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const { extractDocumentText } = await import("./groq.server");
-    const { data: file, error } = await context.supabase.storage.from("resumes").download(data.path);
+    const supabase = workspaceClient();
+    const { data: file, error } = await supabase.storage.from("resumes").download(data.path);
     if (error || !file) throw new Error(error?.message ?? "File not found in storage");
     const text = await extractDocumentText(await file.arrayBuffer(), data.path);
     return { text };
@@ -57,11 +57,10 @@ export const extractStorageText = createServerFn({ method: "POST" })
 
 /** Parse a job description into structured requirements. */
 export const parseJobDescription = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ jobDescriptionId: z.string().uuid() }).parse(input))
-  .handler(async ({ data, context }) => {
+  .handler(async ({ data }) => {
     const { groqJson } = await import("./groq.server");
-    const { supabase } = context;
+    const supabase = workspaceClient();
 
     const { data: jd, error } = await supabase
       .from("job_descriptions")
@@ -126,12 +125,11 @@ async function recomputeRanks(
  * dual-score matching (deterministic keyword + LLM semantic) -> ranking.
  */
 export const analyzeCandidate = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
     z.object({ candidateId: z.string().uuid(), reparse: z.boolean().optional() }).parse(input),
   )
-  .handler(async ({ data, context }) => {
-    const { supabase } = context;
+  .handler(async ({ data }) => {
+    const supabase = workspaceClient();
     const {
       groqJson,
       extractDocumentText,
