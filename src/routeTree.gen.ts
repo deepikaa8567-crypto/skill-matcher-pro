@@ -10,95 +10,73 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
-import { Route as AuthRouteImport } from './routes/auth'
-import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
-import { Route as AuthenticatedJobsIndexRouteImport } from './routes/_authenticated/jobs/index'
-import { Route as AuthenticatedJobsJobIdRouteImport } from './routes/_authenticated/jobs/$jobId'
-import { Route as AuthenticatedJobsNewRouteImport } from './routes/_authenticated/jobs/new'
+import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as JobsIndexRouteImport } from './routes/jobs/index'
+import { Route as JobsJobIdRouteImport } from './routes/jobs/$jobId'
+import { Route as JobsNewRouteImport } from './routes/jobs/new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
-  id: '/_authenticated',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthRoute = AuthRouteImport.update({
-  id: '/auth',
-  path: '/auth',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+const DashboardRoute = DashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedJobsIndexRoute = AuthenticatedJobsIndexRouteImport.update({
+const JobsIndexRoute = JobsIndexRouteImport.update({
   id: '/jobs/',
   path: '/jobs/',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedJobsJobIdRoute = AuthenticatedJobsJobIdRouteImport.update({
+const JobsJobIdRoute = JobsJobIdRouteImport.update({
   id: '/jobs/$jobId',
   path: '/jobs/$jobId',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
-const AuthenticatedJobsNewRoute = AuthenticatedJobsNewRouteImport.update({
+const JobsNewRoute = JobsNewRouteImport.update({
   id: '/jobs/new',
   path: '/jobs/new',
-  getParentRoute: () => AuthenticatedRouteRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/jobs/$jobId': typeof AuthenticatedJobsJobIdRoute
-  '/jobs/new': typeof AuthenticatedJobsNewRoute
-  '/jobs/': typeof AuthenticatedJobsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
+  '/jobs/new': typeof JobsNewRoute
+  '/jobs/': typeof JobsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/auth': typeof AuthRoute
-  '/dashboard': typeof AuthenticatedDashboardRoute
-  '/jobs/$jobId': typeof AuthenticatedJobsJobIdRoute
-  '/jobs/new': typeof AuthenticatedJobsNewRoute
-  '/jobs': typeof AuthenticatedJobsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
+  '/jobs/new': typeof JobsNewRoute
+  '/jobs': typeof JobsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
-  '/auth': typeof AuthRoute
-  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
-  '/_authenticated/jobs/$jobId': typeof AuthenticatedJobsJobIdRoute
-  '/_authenticated/jobs/new': typeof AuthenticatedJobsNewRoute
-  '/_authenticated/jobs/': typeof AuthenticatedJobsIndexRoute
+  '/dashboard': typeof DashboardRoute
+  '/jobs/$jobId': typeof JobsJobIdRoute
+  '/jobs/new': typeof JobsNewRoute
+  '/jobs/': typeof JobsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths:
-    '/' | '/auth' | '/dashboard' | '/jobs/$jobId' | '/jobs/new' | '/jobs/'
+  fullPaths: '/' | '/dashboard' | '/jobs/$jobId' | '/jobs/new' | '/jobs/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/auth' | '/dashboard' | '/jobs/$jobId' | '/jobs/new' | '/jobs'
-  id:
-    | '__root__'
-    | '/'
-    | '/_authenticated'
-    | '/auth'
-    | '/_authenticated/dashboard'
-    | '/_authenticated/jobs/$jobId'
-    | '/_authenticated/jobs/new'
-    | '/_authenticated/jobs/'
+  to: '/' | '/dashboard' | '/jobs/$jobId' | '/jobs/new' | '/jobs'
+  id: '__root__' | '/' | '/dashboard' | '/jobs/$jobId' | '/jobs/new' | '/jobs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
-  AuthRoute: typeof AuthRoute
+  DashboardRoute: typeof DashboardRoute
+  JobsJobIdRoute: typeof JobsJobIdRoute
+  JobsNewRoute: typeof JobsNewRoute
+  JobsIndexRoute: typeof JobsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -110,72 +88,43 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/_authenticated': {
-      id: '/_authenticated'
-      path: ''
-      fullPath: '/'
-      preLoaderRoute: typeof AuthenticatedRouteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/auth': {
-      id: '/auth'
-      path: '/auth'
-      fullPath: '/auth'
-      preLoaderRoute: typeof AuthRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_authenticated/dashboard': {
-      id: '/_authenticated/dashboard'
+    '/dashboard': {
+      id: '/dashboard'
       path: '/dashboard'
       fullPath: '/dashboard'
-      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof DashboardRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/jobs/': {
-      id: '/_authenticated/jobs/'
+    '/jobs/': {
+      id: '/jobs/'
       path: '/jobs'
       fullPath: '/jobs/'
-      preLoaderRoute: typeof AuthenticatedJobsIndexRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof JobsIndexRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/jobs/$jobId': {
-      id: '/_authenticated/jobs/$jobId'
+    '/jobs/$jobId': {
+      id: '/jobs/$jobId'
       path: '/jobs/$jobId'
       fullPath: '/jobs/$jobId'
-      preLoaderRoute: typeof AuthenticatedJobsJobIdRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof JobsJobIdRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/_authenticated/jobs/new': {
-      id: '/_authenticated/jobs/new'
+    '/jobs/new': {
+      id: '/jobs/new'
       path: '/jobs/new'
       fullPath: '/jobs/new'
-      preLoaderRoute: typeof AuthenticatedJobsNewRouteImport
-      parentRoute: typeof AuthenticatedRouteRoute
+      preLoaderRoute: typeof JobsNewRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface AuthenticatedRouteRouteChildren {
-  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
-  AuthenticatedJobsJobIdRoute: typeof AuthenticatedJobsJobIdRoute
-  AuthenticatedJobsNewRoute: typeof AuthenticatedJobsNewRoute
-  AuthenticatedJobsIndexRoute: typeof AuthenticatedJobsIndexRoute
-}
-
-const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
-  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
-  AuthenticatedJobsJobIdRoute: AuthenticatedJobsJobIdRoute,
-  AuthenticatedJobsNewRoute: AuthenticatedJobsNewRoute,
-  AuthenticatedJobsIndexRoute: AuthenticatedJobsIndexRoute,
-}
-
-const AuthenticatedRouteRouteWithChildren =
-  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
-  AuthRoute: AuthRoute,
+  DashboardRoute: DashboardRoute,
+  JobsJobIdRoute: JobsJobIdRoute,
+  JobsNewRoute: JobsNewRoute,
+  JobsIndexRoute: JobsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

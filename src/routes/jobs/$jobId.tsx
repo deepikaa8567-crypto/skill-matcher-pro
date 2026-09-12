@@ -24,7 +24,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { analyzeCandidate, parseJobDescription } from "@/lib/screening.functions";
 import type { CandidateRow, EducationItem, ExperienceItem } from "@/lib/candidate-types";
 
-export const Route = createFileRoute("/_authenticated/jobs/$jobId")({
+export const Route = createFileRoute("/jobs/$jobId")({
   head: () => ({
     meta: [
       { title: "Ranked candidates — SkillMatch AI" },

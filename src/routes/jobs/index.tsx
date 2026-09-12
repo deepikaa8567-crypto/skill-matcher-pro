@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/_authenticated/jobs/")({
+export const Route = createFileRoute("/jobs/")({
   head: () => ({
     meta: [
       { title: "Job descriptions — SkillMatch AI" },

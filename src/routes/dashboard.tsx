@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { ScorePill } from "@/components/score";
 import { supabase } from "@/integrations/supabase/client";
 
-export const Route = createFileRoute("/_authenticated/dashboard")({
+export const Route = createFileRoute("/dashboard")({
   head: () => ({
     meta: [
       { title: "Overview — SkillMatch AI" },
